@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.OData.Builder;
-using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -13,7 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.OData.Edm;
 using Wex.Context;
 using Wex.Context.Models;
 
@@ -36,14 +33,8 @@ namespace WatchExApi
                 options.UseSqlServer(Configuration.GetConnectionString("WexContext"));
             });
 
-            services.AddOData();
-            services.AddODataQueryFilter();
-
             services
-                .AddMvc(options =>
-                {
-                    options.EnableEndpointRouting = false;
-                })
+                .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -62,21 +53,7 @@ namespace WatchExApi
 
             app.UseHttpsRedirection();
 
-            app.UseMvc(config =>
-            {
-                config.Select().Expand().Filter().OrderBy().MaxTop(100).Count();
-                config.MapODataServiceRoute("odata", "odata", GetEdmModel());
-            });
-        }
-
-        private static IEdmModel GetEdmModel()
-        {
-            ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
-
-            builder.EntitySet<Post>("Posts");
-            builder.EntitySet<Image>("Images");
-
-            return builder.GetEdmModel();
+            app.UseMvc();
         }
     }
 }

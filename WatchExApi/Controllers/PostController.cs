@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.OData;
-using Microsoft.AspNet.OData.Routing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,8 +10,9 @@ using Wex.Context.Models;
 
 namespace WatchExApi.Controllers
 {
-    [ODataRoutePrefix("posts")]
-    public class PostController : ODataController
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PostController : ControllerBase
     {
         private readonly WexContext _context;
 
@@ -22,11 +21,34 @@ namespace WatchExApi.Controllers
             _context = context;
         }
 
-        [EnableQuery]
-        [ODataRoute]
-        public IActionResult Get()
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] Criteria criteria)
         {
-            return Ok(_context.Posts.Include(x => x.Images).AsQueryable());
+            IQueryable<Post> posts = _context.Posts.Include("Images");
+
+            if(!string.IsNullOrWhiteSpace(criteria.Filter))
+            {
+                posts = posts.Where(p => p.Title.Contains(criteria.Filter));
+            }
+
+            List<Post> results = await posts
+                .Where(p => !p.IsMeta && !p.Stickied)
+                .OrderByDescending(p => p.CreatedUtc)
+                .Skip(criteria.Skip)
+                .Take(criteria.Take)
+                .ToListAsync();
+
+            return Ok(results);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            Post post = await _context
+                .Posts.Include("Images")
+                .SingleOrDefaultAsync(p => p.Id == id);
+
+            return Ok(post);
         }
     }
 }
