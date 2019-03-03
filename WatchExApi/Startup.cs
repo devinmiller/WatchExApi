@@ -51,6 +51,14 @@ namespace WatchExApi
                 app.UseHsts();
             }
 
+            app.UseCors(policy =>
+            {
+                policy.AllowAnyHeader();
+                policy.AllowAnyMethod();
+
+                policy.WithOrigins("http://localhost:4200");
+            });
+
             app.UseHttpsRedirection();
 
             app.UseMvc();
