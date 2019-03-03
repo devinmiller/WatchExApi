@@ -56,7 +56,7 @@ namespace WatchExApi
                 policy.AllowAnyHeader();
                 policy.AllowAnyMethod();
 
-                policy.WithOrigins("http://localhost:4200");
+                policy.WithOrigins("http://localhost:4200", "https://wex.codeonthebrain.com");
             });
 
             app.UseHttpsRedirection();
