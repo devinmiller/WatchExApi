@@ -32,6 +32,7 @@ namespace WatchExApi.Controllers
             }
 
             List<Post> results = await posts
+                .Where(p => p.Images.Any())
                 .Where(p => !p.IsMeta && !p.Stickied)
                 .OrderByDescending(p => p.CreatedUtc)
                 .Skip(criteria.Skip)
