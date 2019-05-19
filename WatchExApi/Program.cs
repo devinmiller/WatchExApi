@@ -48,6 +48,7 @@ namespace WatchExApi
                 {
                     config.SetBasePath(Directory.GetCurrentDirectory());
                     config.AddJsonFile("appconnections.json", true);
+                    config.AddEnvironmentVariables();
                     
                 })
                 .UseStartup<Startup>()
