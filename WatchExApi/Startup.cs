@@ -30,7 +30,7 @@ namespace WatchExApi
         {
             services.AddDbContext<WexContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("WexContext"));
+                options.UseSqlServer(Configuration["WexContext"]);
             });
 
             services
