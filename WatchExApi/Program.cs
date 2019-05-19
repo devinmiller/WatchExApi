@@ -17,8 +17,7 @@ namespace WatchExApi
         public static int Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .MinimumLevel.Warning()
                 .Enrich.FromLogContext()
                 .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
@@ -49,7 +48,6 @@ namespace WatchExApi
                     config.SetBasePath(Directory.GetCurrentDirectory());
                     config.AddJsonFile("appconnections.json", true);
                     config.AddEnvironmentVariables();
-                    
                 })
                 .UseStartup<Startup>()
                 .UseSerilog();
